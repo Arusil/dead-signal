@@ -159,6 +159,10 @@
     background: linear-gradient(145deg, #2e0a0a 0%, #180606 50%, #2e0a0a 100%);
   }
 
+  .app-icon.noir-icon {
+    background: linear-gradient(145deg, #1a1a1a 0%, #0a0a0a 50%, #1a1a1a 100%);
+  }
+
   .notification-content {
     flex: 1;
     min-width: 0;
@@ -239,7 +243,91 @@
     margin-top: 4px;
   }
 
-  /* ============ SCREEN 2: SURVEILLANCE HUD ============ */
+  /* ============ SCREEN 2: BOOT SCREEN ============ */
+  #bootScreen {
+    background: #000;
+    flex-direction: column;
+    z-index: 150;
+    align-items: flex-start;
+    justify-content: flex-start;
+    padding: 40px 20px;
+    overflow: hidden;
+  }
+
+  .boot-terminal {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 12px;
+    line-height: 1.7;
+    color: var(--hud-green);
+    width: 100%;
+    opacity: 0.9;
+  }
+
+  .boot-line {
+    opacity: 0;
+    transform: translateY(2px);
+    white-space: pre;
+    overflow: hidden;
+  }
+
+  .boot-line.visible {
+    opacity: 1;
+    transform: translateY(0);
+    transition: opacity 0.1s ease, transform 0.1s ease;
+  }
+
+  .boot-line.dim {
+    color: rgba(0, 255, 136, 0.4);
+  }
+
+  .boot-line.warn {
+    color: var(--hud-amber);
+  }
+
+  .boot-line.err {
+    color: var(--hud-red);
+  }
+
+  .boot-line.purple {
+    color: var(--shade-purple);
+  }
+
+  .boot-line.bright {
+    color: #fff;
+  }
+
+  .boot-cursor {
+    display: inline-block;
+    width: 7px;
+    height: 13px;
+    background: var(--hud-green);
+    vertical-align: text-bottom;
+    animation: blink 0.6s step-end infinite;
+    margin-left: 2px;
+  }
+
+  .boot-progress-bar {
+    display: inline-block;
+    color: var(--hud-green);
+  }
+
+  .boot-scanline {
+    position: fixed;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: rgba(0, 255, 136, 0.07);
+    z-index: 160;
+    pointer-events: none;
+    animation: bootScanDrift 3s linear infinite;
+  }
+
+  @keyframes bootScanDrift {
+    0% { top: -2px; }
+    100% { top: 100vh; }
+  }
+
+  /* ============ SCREEN 3: SURVEILLANCE HUD ============ */
   #surveillanceScreen {
     background: #000;
     flex-direction: column;
@@ -310,7 +398,7 @@
     height: 100%;
     object-fit: contain;
     opacity: 0;
-    animation: feedOn 0.3s ease forwards 0.8s;
+    animation: feedOn 0.3s ease forwards 0.2s;
     filter: brightness(0.95) contrast(1.05);
   }
 
@@ -380,7 +468,7 @@
     color: var(--hud-red);
     letter-spacing: 1.5px;
     opacity: 0;
-    animation: fadeIn 0.3s ease forwards 1.2s;
+    animation: fadeIn 0.3s ease forwards 0.5s;
   }
 
   .motion-dot {
@@ -406,7 +494,7 @@
     color: var(--hud-red);
     letter-spacing: 2px;
     opacity: 0;
-    animation: fadeIn 0.3s ease forwards 1s;
+    animation: fadeIn 0.3s ease forwards 0.3s;
   }
 
   .rec-dot {
@@ -460,7 +548,7 @@
     z-index: 5;
     pointer-events: none;
     opacity: 0;
-    animation: fadeIn 0.3s ease forwards 1s;
+    animation: fadeIn 0.3s ease forwards 0.3s;
   }
 
   .corner-brackets::before,
@@ -489,7 +577,7 @@
     z-index: 5;
     pointer-events: none;
     opacity: 0;
-    animation: fadeIn 0.3s ease forwards 1s;
+    animation: fadeIn 0.3s ease forwards 0.3s;
   }
 
   .corner-brackets-bottom::before,
@@ -529,7 +617,7 @@
     border-radius: 4px;
     cursor: pointer;
     opacity: 0;
-    animation: fadeIn 0.5s ease forwards 2s;
+    animation: fadeIn 0.5s ease forwards 1s;
     transition: all 0.2s ease;
   }
 
@@ -585,6 +673,17 @@
     0% { opacity: 0.4; }
     100% { opacity: 0; }
   }
+
+  /* Noir notification */
+  .noir-banner {
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .noir-banner .notification-title {
+    color: rgba(255, 255, 255, 0.95);
+  }
 </style>
 </head>
 <body>
@@ -626,10 +725,9 @@
     </div>
 
     <!-- Motion Alert -->
-    <div class="notification-banner motion-banner" id="notifMotion" onclick="showSurveillance()">
+    <div class="notification-banner motion-banner" id="notifMotion" onclick="showBoot()">
       <div class="app-icon alert-icon">
         <svg viewBox="0 0 100 100" fill="none">
-          <!-- Camera icon -->
           <rect x="15" y="30" width="50" height="40" rx="5" fill="#2e0a0a" stroke="#ff2244" stroke-width="2"/>
           <polygon points="65,38 85,28 85,72 65,62" fill="#2e0a0a" stroke="#ff2244" stroke-width="2"/>
           <circle cx="38" cy="50" r="10" fill="none" stroke="#ff2244" stroke-width="2" opacity="0.6"/>
@@ -645,13 +743,46 @@
         </div>
         <div class="notification-title">⚠ MOTION DETECTED — KAMERA 04</div>
         <div class="notification-body">Motion sensor triggered. Abnormal activity captured near terrace entry point.</div>
-        <div class="tap-hint">Tap to view feed</div>
+        <div class="tap-hint">Tap to investigate ›</div>
+      </div>
+    </div>
+
+    <!-- Noir message (hidden until after feed closes) -->
+    <div class="notification-banner noir-banner" id="notifNoir">
+      <div class="app-icon noir-icon">
+        <svg viewBox="0 0 100 100" fill="none">
+          <!-- Theatre mask -->
+          <path d="M50 12C30 12 14 28 14 48C14 68 30 85 50 88C70 85 86 68 86 48C86 28 70 12 50 12Z" fill="#1a1a1a" stroke="rgba(255,255,255,0.85)" stroke-width="2.5"/>
+          <!-- Left eye hole -->
+          <ellipse cx="37" cy="42" rx="9" ry="7" fill="#000" stroke="rgba(255,255,255,0.7)" stroke-width="1.5"/>
+          <!-- Right eye hole -->
+          <ellipse cx="63" cy="42" rx="9" ry="7" fill="#000" stroke="rgba(255,255,255,0.7)" stroke-width="1.5"/>
+          <!-- Curved smile -->
+          <path d="M34 62 Q42 74 50 74 Q58 74 66 62" stroke="rgba(255,255,255,0.8)" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+          <!-- Eyebrow arches -->
+          <path d="M28 33 Q37 26 46 33" stroke="rgba(255,255,255,0.4)" stroke-width="1.5" fill="none"/>
+          <path d="M54 33 Q63 26 72 33" stroke="rgba(255,255,255,0.4)" stroke-width="1.5" fill="none"/>
+        </svg>
+      </div>
+      <div class="notification-content">
+        <div class="notification-header">
+          <span class="app-name">Noir</span>
+          <span class="notification-time">now</span>
+        </div>
+        <div class="notification-title">New Message</div>
+        <div class="notification-body">Don't move ;)</div>
       </div>
     </div>
   </div>
 </div>
 
-<!-- ====== SCREEN 2: SURVEILLANCE FEED ====== -->
+<!-- ====== SCREEN 2: BOOT SEQUENCE ====== -->
+<div class="screen hidden" id="bootScreen">
+  <div class="boot-scanline"></div>
+  <div class="boot-terminal" id="bootTerminal"></div>
+</div>
+
+<!-- ====== SCREEN 3: SURVEILLANCE FEED ====== -->
 <div class="screen hidden" id="surveillanceScreen">
   <div class="hud-container">
     <div class="hud-top">
@@ -718,21 +849,120 @@
     if (navigator.vibrate) navigator.vibrate([200, 80, 200, 80, 300]);
   }, 3600);
 
-  // Surveillance screen transition
-  function showSurveillance() {
+  // ============ BOOT SEQUENCE ============
+  const bootLines = [
+    { text: 'VIVEX SECURITY SYSTEMS v4.2.1', cls: 'purple', delay: 0 },
+    { text: '(c) 2024 VIVEX Corp. All rights reserved.', cls: 'dim', delay: 80 },
+    { text: '', cls: 'dim', delay: 120 },
+    { text: 'BIOS CHECK ............ OK', cls: '', delay: 200 },
+    { text: 'RAM  512MB ............ OK', cls: '', delay: 100 },
+    { text: 'NET ADAPTER ........... OK', cls: '', delay: 100 },
+    { text: 'GPU DECODE ............ OK', cls: '', delay: 80 },
+    { text: '', cls: 'dim', delay: 100 },
+    { text: 'Initializing CamSPY daemon...', cls: '', delay: 300 },
+    { text: '> Loading /etc/vivex/cam.conf', cls: 'dim', delay: 150 },
+    { text: '> Mounting encrypted feed store', cls: 'dim', delay: 200 },
+    { text: '> Authenticating node: KAMERA-04', cls: 'dim', delay: 250 },
+    { text: 'AUTH TOKEN ............ VALID', cls: '', delay: 150 },
+    { text: '', cls: 'dim', delay: 80 },
+    { text: 'Connecting to feed relay...', cls: '', delay: 400 },
+    { text: '> Tunnel established: 10.0.77.4:8443', cls: 'dim', delay: 200 },
+    { text: '> Bitrate: 4.2 Mbps | Latency: 23ms', cls: 'dim', delay: 120 },
+    { text: '> Encryption: AES-256-GCM', cls: 'dim', delay: 100 },
+    { text: '', cls: 'dim', delay: 80 },
+    { text: '! MOTION FLAG ACTIVE — SECTOR B', cls: 'err', delay: 300 },
+    { text: '! ALERT LEVEL: HIGH', cls: 'err', delay: 150 },
+    { text: '', cls: 'dim', delay: 100 },
+    { text: 'Decoding feed stream ', cls: '', delay: 200, progress: true },
+    { text: '', cls: 'dim', delay: 100 },
+    { text: 'FEED READY. LAUNCHING HUD...', cls: 'bright', delay: 400 },
+  ];
+
+  let bootRunning = false;
+
+  function showBoot() {
+    if (bootRunning) return;
+    bootRunning = true;
+
     const flash = document.getElementById('screenFlash');
     flash.classList.add('flash');
     setTimeout(() => flash.classList.remove('flash'), 300);
-
     if (navigator.vibrate) navigator.vibrate(100);
 
     document.getElementById('lockScreen').classList.add('hidden');
-    document.getElementById('surveillanceScreen').classList.remove('hidden');
+    document.getElementById('bootScreen').classList.remove('hidden');
+
+    const terminal = document.getElementById('bootTerminal');
+    terminal.innerHTML = '';
+
+    let totalDelay = 200;
+
+    bootLines.forEach((line, i) => {
+      totalDelay += line.delay;
+
+      setTimeout(() => {
+        const el = document.createElement('div');
+        el.className = 'boot-line ' + (line.cls || '');
+
+        if (line.progress) {
+          el.innerHTML = line.text;
+          terminal.appendChild(el);
+          el.classList.add('visible');
+          // Animate progress bar
+          let progress = 0;
+          const bar = document.createElement('span');
+          bar.className = 'boot-progress-bar';
+          el.appendChild(bar);
+          const intv = setInterval(() => {
+            progress += Math.random() * 18 + 5;
+            if (progress >= 100) {
+              progress = 100;
+              clearInterval(intv);
+              bar.textContent = '[████████████████████] 100%';
+            } else {
+              const filled = Math.round(progress / 5);
+              const empty = 20 - filled;
+              bar.textContent = '[' + '█'.repeat(filled) + '░'.repeat(empty) + '] ' + Math.round(progress) + '%';
+            }
+          }, 80);
+        } else {
+          el.textContent = line.text || '\u00A0';
+          terminal.appendChild(el);
+          setTimeout(() => el.classList.add('visible'), 20);
+        }
+
+        // Auto-scroll
+        terminal.scrollTop = terminal.scrollHeight;
+      }, totalDelay);
+    });
+
+    // After boot completes, transition to surveillance
+    totalDelay += 800;
+    setTimeout(() => {
+      const flash2 = document.getElementById('screenFlash');
+      flash2.classList.add('flash');
+      setTimeout(() => flash2.classList.remove('flash'), 300);
+
+      document.getElementById('bootScreen').classList.add('hidden');
+      document.getElementById('surveillanceScreen').classList.remove('hidden');
+      bootRunning = false;
+    }, totalDelay);
   }
+
+  // Close surveillance and show Noir message
+  let noirShown = false;
 
   function hideSurveillance() {
     document.getElementById('surveillanceScreen').classList.add('hidden');
     document.getElementById('lockScreen').classList.remove('hidden');
+
+    if (!noirShown) {
+      noirShown = true;
+      setTimeout(() => {
+        document.getElementById('notifNoir').classList.add('slide-in');
+        if (navigator.vibrate) navigator.vibrate([150, 60, 150]);
+      }, 1200);
+    }
   }
 </script>
 </body>
