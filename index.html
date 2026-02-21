@@ -699,31 +699,6 @@
   </div>
 
   <div class="notification-container" id="notifContainer">
-    <!-- Shade message -->
-    <div class="notification-banner" id="notifShade">
-      <div class="app-icon">
-        <svg viewBox="0 0 100 100" fill="none">
-          <path d="M50 8C32 8 20 22 18 38C16 54 22 65 28 72C32 77 38 82 50 88C62 82 68 77 72 72C78 65 84 54 82 38C80 22 68 8 50 8Z" fill="#2a1545" stroke="#6b3fa0" stroke-width="1.5"/>
-          <ellipse cx="50" cy="46" rx="18" ry="20" fill="#0d0618"/>
-          <ellipse cx="42" cy="44" rx="3.5" ry="2.5" fill="#bf3f3f">
-            <animate attributeName="opacity" values="0.7;1;0.7" dur="3s" repeatCount="indefinite"/>
-          </ellipse>
-          <ellipse cx="58" cy="44" rx="3.5" ry="2.5" fill="#bf3f3f">
-            <animate attributeName="opacity" values="0.7;1;0.7" dur="3s" repeatCount="indefinite"/>
-          </ellipse>
-          <path d="M43 56 Q50 60 57 56" stroke="#6b3fa0" stroke-width="1.2" fill="none" opacity="0.5"/>
-        </svg>
-      </div>
-      <div class="notification-content">
-        <div class="notification-header">
-          <span class="app-name">The Shade</span>
-          <span class="notification-time">now</span>
-        </div>
-        <div class="notification-title">Package Delivery</div>
-        <div class="notification-body">Look in front of the terrace door. Don't keep me waiting.</div>
-      </div>
-    </div>
-
     <!-- Motion Alert -->
     <div class="notification-banner motion-banner" id="notifMotion" onclick="showBoot()">
       <div class="app-icon alert-icon">
@@ -747,19 +722,14 @@
       </div>
     </div>
 
-    <!-- Noir message (hidden until after feed closes) -->
+    <!-- Noir message (after feed closes) -->
     <div class="notification-banner noir-banner" id="notifNoir">
       <div class="app-icon noir-icon">
         <svg viewBox="0 0 100 100" fill="none">
-          <!-- Theatre mask -->
           <path d="M50 12C30 12 14 28 14 48C14 68 30 85 50 88C70 85 86 68 86 48C86 28 70 12 50 12Z" fill="#1a1a1a" stroke="rgba(255,255,255,0.85)" stroke-width="2.5"/>
-          <!-- Left eye hole -->
           <ellipse cx="37" cy="42" rx="9" ry="7" fill="#000" stroke="rgba(255,255,255,0.7)" stroke-width="1.5"/>
-          <!-- Right eye hole -->
           <ellipse cx="63" cy="42" rx="9" ry="7" fill="#000" stroke="rgba(255,255,255,0.7)" stroke-width="1.5"/>
-          <!-- Curved smile -->
           <path d="M34 62 Q42 74 50 74 Q58 74 66 62" stroke="rgba(255,255,255,0.8)" stroke-width="2.5" fill="none" stroke-linecap="round"/>
-          <!-- Eyebrow arches -->
           <path d="M28 33 Q37 26 46 33" stroke="rgba(255,255,255,0.4)" stroke-width="1.5" fill="none"/>
           <path d="M54 33 Q63 26 72 33" stroke="rgba(255,255,255,0.4)" stroke-width="1.5" fill="none"/>
         </svg>
@@ -771,6 +741,31 @@
         </div>
         <div class="notification-title">New Message</div>
         <div class="notification-body">Don't move ;)</div>
+      </div>
+    </div>
+
+    <!-- Shade message (after Noir) -->
+    <div class="notification-banner" id="notifShade">
+      <div class="app-icon">
+        <svg viewBox="0 0 100 100" fill="none">
+          <path d="M50 8C32 8 20 22 18 38C16 54 22 65 28 72C32 77 38 82 50 88C62 82 68 77 72 72C78 65 84 54 82 38C80 22 68 8 50 8Z" fill="#2a1545" stroke="#6b3fa0" stroke-width="1.5"/>
+          <ellipse cx="50" cy="46" rx="18" ry="20" fill="#0d0618"/>
+          <ellipse cx="42" cy="44" rx="3.5" ry="2.5" fill="#bf3f3f">
+            <animate attributeName="opacity" values="0.7;1;0.7" dur="3s" repeatCount="indefinite"/>
+          </ellipse>
+          <ellipse cx="58" cy="44" rx="3.5" ry="2.5" fill="#bf3f3f">
+            <animate attributeName="opacity" values="0.7;1;0.7" dur="3s" repeatCount="indefinite"/>
+          </ellipse>
+          <path d="M43 56 Q50 60 57 56" stroke="#6b3fa0" stroke-width="1.2" fill="none" opacity="0.5"/>
+        </svg>
+      </div>
+      <div class="notification-content">
+        <div class="notification-header">
+          <span class="app-name">The Shade</span>
+          <span class="notification-time">now</span>
+        </div>
+        <div class="notification-title">Package Delivery</div>
+        <div class="notification-body">Look in front of the terrace door. Don't keep me waiting.</div>
       </div>
     </div>
   </div>
@@ -794,7 +789,7 @@
     </div>
 
     <div class="feed-area">
-      <img class="cam-image" id="camImage" src="SurveillancePic.png">
+      <img class="cam-image" id="camImage" src="image.jpg">
       <div class="feed-scanlines"></div>
       <div class="feed-glitch"></div>
       <div class="corner-brackets"></div>
@@ -838,16 +833,11 @@
   updateClock();
   setInterval(updateClock, 1000);
 
-  // Staggered notification entrance
-  setTimeout(() => {
-    document.getElementById('notifShade').classList.add('slide-in');
-    if (navigator.vibrate) navigator.vibrate([100, 50, 100]);
-  }, 1800);
-
+  // Only motion alert shows initially
   setTimeout(() => {
     document.getElementById('notifMotion').classList.add('slide-in');
     if (navigator.vibrate) navigator.vibrate([200, 80, 200, 80, 300]);
-  }, 3600);
+  }, 1800);
 
   // ============ BOOT SEQUENCE ============
   const bootLines = [
@@ -962,6 +952,12 @@
         document.getElementById('notifNoir').classList.add('slide-in');
         if (navigator.vibrate) navigator.vibrate([150, 60, 150]);
       }, 1200);
+
+      // Shade message follows after Noir
+      setTimeout(() => {
+        document.getElementById('notifShade').classList.add('slide-in');
+        if (navigator.vibrate) navigator.vibrate([100, 50, 100]);
+      }, 3500);
     }
   }
 </script>
